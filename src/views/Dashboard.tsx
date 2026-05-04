@@ -4,6 +4,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { useApi } from "../hooks/useApi";
 import type { ServiceRecord } from "../types";
 import { formatDate, getTimelineStatus } from "../utils/dates";
+import { Link } from "react-router";
 
 export default function Dashboard() {
     const api = useApi();
@@ -49,9 +50,11 @@ export default function Dashboard() {
                         Aquí está el resumen de tu estudio hoy.
                     </p>
                 </div>
-                <button className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm">
+                <Link
+                    to="/clientes"
+                    className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm">
                     Ver clientes <FaArrowRight />
-                </button>
+                </Link>
             </header>
 
             {/* Bento Grid Superior... (Se mantiene igual) */}
@@ -153,7 +156,6 @@ export default function Dashboard() {
                     )}
                 </div>
 
-                {/* Columna Derecha: Últimos Movimientos */}
                 {/* Columna Derecha: Últimos Movimientos */}
                 <div className="bg-maison-card border border-maison-border rounded-2xl p-6 shadow-sm flex flex-col">
                     <h4 className="text-xl font-serif">Últimos movimientos</h4>

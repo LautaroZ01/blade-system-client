@@ -1,5 +1,5 @@
 import { useAuth, UserButton } from "@clerk/react";
-import { Navigate, Outlet } from "react-router";
+import { Navigate, NavLink, Outlet } from "react-router";
 
 export default function AppLayout() {
     const { isLoaded, userId } = useAuth();
@@ -31,13 +31,26 @@ export default function AppLayout() {
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
-                    {/* Aquí irán luego los links a Inicio y Clientes */}
-                    <div className="p-3 bg-maison-bg rounded-lg font-medium border border-maison-border">
+                    <NavLink
+                        to="/"
+                        end
+                        className={({ isActive }) => `block p-3 rounded-lg font-medium transition-colors ${isActive
+                            ? 'bg-maison-bg text-maison-text border border-maison-border'
+                            : 'text-gray-500 hover:text-maison-text hover:bg-gray-50 border border-transparent'
+                            }`}
+                    >
                         Inicio
-                    </div>
-                    <div className="p-3 text-gray-500 hover:text-maison-text hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
+                    </NavLink>
+
+                    <NavLink
+                        to="/clientes"
+                        className={({ isActive }) => `block p-3 rounded-lg font-medium transition-colors ${isActive
+                            ? 'bg-maison-bg text-maison-text border border-maison-border'
+                            : 'text-gray-500 hover:text-maison-text hover:bg-gray-50 border border-transparent'
+                            }`}
+                    >
                         Clientes
-                    </div>
+                    </NavLink>
                 </nav>
 
                 <div className="p-4 border-t border-maison-border flex items-center gap-3">

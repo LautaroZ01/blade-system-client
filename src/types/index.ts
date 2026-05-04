@@ -28,3 +28,14 @@ export interface ServiceRecord {
     updatedAt: string; // ISO string
     __v?: number;
 }
+
+export interface Client {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    medicalNotes?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
