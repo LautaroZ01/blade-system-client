@@ -1,20 +1,29 @@
-// --- FUNCIONES AUXILIARES DE TIEMPO Y FORMATO ---
+// 1. FUNCION AUXILIAR (El truco de magia)
+// Convertimos "2026-05-05T00:00:00.000Z" -> "2026/05/05"
+// Al usar barras (/) en lugar de guiones (-), JavaScript automáticamente
+// lo parsea en la zona horaria local a las 00:00:00, anulando el desfase de UTC-3.
+const createSafeLocalDate = (dateString: string) => {
+    const datePart = dateString.split('T')[0].replace(/-/g, '/');
+    return new Date(datePart);
+};
 
-// 1. Formateador de fechas al estilo "23 de abr de 2026"
+// 2. Formateador actualizado
 export const formatDate = (dateString: string) => {
+    const safeDate = createSafeLocalDate(dateString);
     return new Intl.DateTimeFormat('es-AR', {
         day: 'numeric',
         month: 'short',
         year: 'numeric'
-    }).format(new Date(dateString));
+    }).format(safeDate);
 };
 
-// 2. Calculadora de estado visual para la línea de tiempo
+// 3. Calculadora de estado actualizada
 export const getTimelineStatus = (dateString: string) => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reseteamos horas para comparar solo días
-    const target = new Date(dateString);
-    target.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0); // Forzamos 'hoy' a las 00:00:00 locales
+
+    // Usamos nuestra fecha segura sin desfasaje
+    const target = createSafeLocalDate(dateString);
 
     const diffTime = target.getTime() - today.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
@@ -55,7 +64,6 @@ export const getTimelineStatus = (dateString: string) => {
         };
     }
 
-    // Fallback para fechas muy lejanas (+ de 3 semanas) en tono neutro
     return {
         label: `En ${diffDays} días`,
         dotColor: 'bg-gray-400',

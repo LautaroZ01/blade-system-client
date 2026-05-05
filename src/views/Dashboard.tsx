@@ -1,13 +1,17 @@
-import { FiCalendar, FiScissors, FiUsers } from "react-icons/fi";
-import { useQuery } from "@tanstack/react-query";
-import { FaArrowRight } from "react-icons/fa";
+import { FiCalendar, FiCheck, FiPlus, FiScissors, FiUsers } from "react-icons/fi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../hooks/useApi";
 import type { ServiceRecord } from "../types";
 import { formatDate, getTimelineStatus } from "../utils/dates";
 import { Link } from "react-router";
+import { useState } from "react";
+import { toast } from "sonner";
+import RegistroModal from "../components/RegistroModal";
 
 export default function Dashboard() {
     const api = useApi();
+
+    const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
 
     const { data: retoques, isLoading, isError } = useQuery<ServiceRecord[]>({
         queryKey: ['upcoming-touchups'],
@@ -24,6 +28,23 @@ export default function Dashboard() {
             const response = await api.get('/registros/recientes');
             return response.data;
         }
+    });
+
+    const queryClient = useQueryClient();
+
+    const { mutate: completarRetoque } = useMutation({
+        mutationFn: async (id: string) => {
+            const response = await api.put(`/registros/${id}`, { touchupStatus: 'completed' });
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success('Retoque marcado como completado', {
+                style: { background: '#FDFBF7', color: '#54A885', borderColor: '#54A885' }
+            });
+            // Refrescamos la lista para que desaparezca
+            queryClient.invalidateQueries({ queryKey: ['upcoming-touchups'] });
+        },
+        onError: () => toast.error('Error al actualizar el estado')
     });
 
     const mockStats = {
@@ -50,11 +71,22 @@ export default function Dashboard() {
                         Aquí está el resumen de tu estudio hoy.
                     </p>
                 </div>
-                <Link
-                    to="/clientes"
-                    className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm">
-                    Ver clientes <FaArrowRight />
-                </Link>
+                <div className="flex gap-3">
+                    {/* Botón Ver clientes que ya tenías (lo hacemos Link o botón secundario) */}
+                    <Link
+                        to="/clientes"
+                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm">
+                        Clientes
+                    </Link>
+
+                    {/* ⭐️ Botón Principal: Nueva Visita */}
+                    <button
+                        onClick={() => setIsRegistroModalOpen(true)}
+                        className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                    >
+                        <FiPlus /> Nueva Visita
+                    </button>
+                </div>
             </header>
 
             {/* Bento Grid Superior... (Se mantiene igual) */}
@@ -121,7 +153,7 @@ export default function Dashboard() {
                                 const initials = registro.client.firstName.charAt(0).toUpperCase();
 
                                 return (
-                                    <div key={registro._id} className="relative flex justify-between items-center bg-white border border-maison-border rounded-xl p-4 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] ml-6 hover:border-gray-300 transition-colors">
+                                    <div key={registro._id} className="relative flex justify-between items-center bg-white border border-maison-border rounded-xl p-4 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] ml-6 hover:border-gray-300 transition-colors group">
 
                                         {/* El Punto de Color en la Línea */}
                                         {/* ring-4 ring-white hace un espacio blanco alrededor del punto para "cortar" la línea vertical */}
@@ -149,6 +181,14 @@ export default function Dashboard() {
                                                 {formatDate(registro.nextTouchupDate)}
                                             </p>
                                         </div>
+
+                                        <button
+                                            onClick={() => completarRetoque(registro._id)}
+                                            title="Marcar retoque como realizado"
+                                            className="absolute -right-3 -top-3 w-8 h-8 bg-maison-bg border border-maison-border rounded-full flex items-center justify-center text-gray-400 hover:text-maison-green hover:border-maison-green opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-sm"
+                                        >
+                                            <FiCheck size={16} />
+                                        </button>
                                     </div>
                                 );
                             })}
@@ -189,8 +229,11 @@ export default function Dashboard() {
                         </ul>
                     )}
                 </div>
-
             </div>
+            <RegistroModal
+                isOpen={isRegistroModalOpen}
+                onClose={() => setIsRegistroModalOpen(false)}
+            />
         </div>
     );
 }
