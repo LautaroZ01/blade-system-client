@@ -5,6 +5,7 @@ import AppLayout from "./layouts/AppLayout";
 import Dashboard from "./views/Dashboard";
 import Clients from "./views/Clients";
 import ProfileClient from "./views/ProfileClient";
+import Servicios from "./views/Servicios";
 
 export default function Router() {
     return (
@@ -16,6 +17,7 @@ export default function Router() {
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/clientes" element={<Clients />} />
                     <Route path="/clientes/:id" element={<ProfileClient />} />
+                    <Route path="/servicios" element={<Servicios />} />
                 </Route>
 
             </Routes>
