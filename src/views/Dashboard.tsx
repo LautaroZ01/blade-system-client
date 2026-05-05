@@ -6,6 +6,7 @@ import { useApi } from '../hooks/useApi';
 import type { ServiceRecord } from '../types';
 import { formatDate, getTimelineStatus } from '../utils/dates';
 import RegistroModal from '../components/RegistroModal';
+import { Link } from 'react-router';
 
 export default function Dashboard() {
     const api = useApi();
@@ -64,9 +65,9 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex gap-3">
-                    <button className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm">
+                    <Link to="/clientes" className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm">
                         Directorio
-                    </button>
+                    </Link>
                     <button
                         onClick={() => setIsRegistroModalOpen(true)}
                         className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
