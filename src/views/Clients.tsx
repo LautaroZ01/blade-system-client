@@ -4,6 +4,7 @@ import { FiSearch, FiPlus, FiUser, FiPhone } from 'react-icons/fi';
 import { useApi } from '../hooks/useApi';
 import type { Client } from '../types';
 import ClienteModal from '../components/ClienteModal';
+import { Link, } from 'react-router';
 
 export default function Clients() {
     const api = useApi();
@@ -111,9 +112,9 @@ export default function Clients() {
                                     </div>
 
                                     {/* Botón de Acción */}
-                                    <button className="opacity-0 group-hover:opacity-100 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer shadow-sm flex items-center gap-2">
+                                    <Link to={`/clientes/${cliente._id}`} className="opacity-0 group-hover:opacity-100 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer shadow-sm flex items-center gap-2">
                                         <FiUser /> Ver Perfil
-                                    </button>
+                                    </Link>
                                 </li>
                             );
                         })}

@@ -39,3 +39,11 @@ export interface Client {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface Service {
+    _id: string;
+    name: string;
+    defaultTouchupDays: number;
+    createdAt: string;
+    updatedAt: string;
+}
