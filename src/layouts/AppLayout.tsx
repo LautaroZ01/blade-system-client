@@ -1,4 +1,5 @@
 import { useAuth, UserButton } from "@clerk/react";
+import { FiBox } from "react-icons/fi";
 import { Navigate, NavLink, Outlet } from "react-router";
 
 export default function AppLayout() {
@@ -59,6 +60,13 @@ export default function AppLayout() {
                             }`}
                     >
                         Servicios
+                    </NavLink>
+                    <NavLink
+                        to="/inventario"
+                        className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive ? 'bg-maison-text text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-maison-text'}`}
+                    >
+                        <FiBox className="text-xl" />
+                        <span className="font-medium">Inventario</span>
                     </NavLink>
                 </nav>
 

@@ -1,4 +1,18 @@
-// src/types/index.ts
+export interface Product {
+    _id: string;
+    name: string;
+    brand: string;
+    stock: number;
+    description?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface UsedProduct {
+    product: Product | string; // Puede venir el ID (string) o el objeto populado (Product)
+    quantity: number;
+}
 
 // Interfaz para el Cliente poblado (reducido a los campos que devuelve el endpoint de retoques)
 export interface ClientSlim {
@@ -21,7 +35,7 @@ export interface ServiceRecord {
     service: ServiceSlim;
     serviceDate: string; // ISO string
     notes?: string;
-    productsUsed?: string;
+    productsUsed?: UsedProduct[];
     nextTouchupDate?: string; // ISO string
     touchupStatus: 'pending' | 'completed' | 'cancelled';
     createdAt: string; // ISO string

@@ -6,6 +6,7 @@ import Dashboard from "./views/Dashboard";
 import Clients from "./views/Clients";
 import ProfileClient from "./views/ProfileClient";
 import Servicios from "./views/Servicios";
+import Inventario from "./views/Inventario";
 
 export default function Router() {
     return (
@@ -18,6 +19,7 @@ export default function Router() {
                     <Route path="/clientes" element={<Clients />} />
                     <Route path="/clientes/:id" element={<ProfileClient />} />
                     <Route path="/servicios" element={<Servicios />} />
+                    <Route path="/inventario" element={<Inventario />} />
                 </Route>
 
             </Routes>
