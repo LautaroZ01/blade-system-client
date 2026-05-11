@@ -178,10 +178,22 @@ export default function PerfilCliente() {
                                                         <p>{registro.notes}</p>
                                                     </div>
                                                 )}
-                                                {registro.productsUsed && (
+                                                {registro.productsUsed && registro.productsUsed.length > 0 && (
                                                     <div className="flex gap-2 text-sm text-gray-600">
                                                         <FiBox className="text-gray-400 mt-0.5 shrink-0" />
-                                                        <p><span className="font-medium text-gray-700">Fórmula/Productos:</span> {registro.productsUsed}</p>
+                                                        <div>
+                                                            <span className="font-medium text-gray-700">Insumos: </span>
+                                                            <span className="text-gray-600">
+                                                                {registro.productsUsed.map(item => {
+                                                                    // Validamos si viene como objeto (populado) o string (solo ID)
+                                                                    const productName = typeof item.product === 'object' && item.product !== null
+                                                                        ? item.product.name
+                                                                        : 'Insumo';
+
+                                                                    return `${productName} (${item.quantity > 0 ? item.quantity : '0'})`;
+                                                                }).join(', ')}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
