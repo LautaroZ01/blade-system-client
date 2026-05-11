@@ -1,20 +1,18 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { FiBox, FiAlertTriangle, FiPlus, FiEdit2, FiLayers, FiActivity } from 'react-icons/fi';
+import { FiBox, FiAlertTriangle, FiPlus, FiEdit2, FiLayers, FiActivity, FiUploadCloud } from 'react-icons/fi';
 import { useApi } from '../hooks/useApi';
 import type { Product } from '../types';
 import ProductoModal from '../components/ProductoModal';
 import AjusteStockModal from '../components/AjusteStockModal';
-
-// Importaremos estos modales en el próximo paso
-// import ProductoModal from '../components/ProductoModal';
-// import AjusteStockModal from '../components/AjusteStockModal';
+import CargaMasivaModal from '../components/CargaMasivaModal';
 
 export default function Inventario() {
     const api = useApi();
 
     // Estados para los modales
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+    const [isCargaMasivaModalOpen, setIsCargaMasivaModalOpen] = useState(false);
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -61,12 +59,21 @@ export default function Inventario() {
                     </h3>
                 </div>
 
-                <button
-                    onClick={handleNewProduct}
-                    className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
-                >
-                    <FiPlus /> Nuevo Producto
-                </button>
+                {/* ⭐️ NUEVO: Contenedor con los dos botones */}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsCargaMasivaModalOpen(true)}
+                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
+                    >
+                        <FiUploadCloud className="text-lg" /> Carga Masiva
+                    </button>
+                    <button
+                        onClick={handleNewProduct}
+                        className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
+                    >
+                        <FiPlus className="text-lg" /> Nuevo Producto
+                    </button>
+                </div>
             </header>
 
             {/* BENTO GRID DE ESTADÍSTICAS */}
@@ -203,6 +210,10 @@ export default function Inventario() {
                 isOpen={isStockModalOpen}
                 onClose={() => setIsStockModalOpen(false)}
                 product={selectedProduct}
+            />
+            <CargaMasivaModal
+                isOpen={isCargaMasivaModalOpen}
+                onClose={() => setIsCargaMasivaModalOpen(false)}
             />
         </div>
     );
