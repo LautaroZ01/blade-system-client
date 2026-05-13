@@ -1,127 +1,77 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FiBox, FiAlertTriangle, FiPlus, FiEdit2, FiLayers, FiActivity, FiUploadCloud } from 'react-icons/fi';
-import { useApi } from '../hooks/useApi';
+
+import { getProducts } from '../api/productApi';
 import type { Product } from '../types';
 import ProductoModal from '../components/ProductoModal';
 import AjusteStockModal from '../components/AjusteStockModal';
 import CargaMasivaModal from '../components/CargaMasivaModal';
 
 export default function Inventario() {
-    const api = useApi();
-
-    // Estados para los modales
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [isCargaMasivaModalOpen, setIsCargaMasivaModalOpen] = useState(false);
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    // Query para obtener los productos
     const { data: products, isLoading } = useQuery<Product[]>({
         queryKey: ['products'],
-        queryFn: async () => {
-            const response = await api.get('/productos');
-            return response.data;
-        }
+        queryFn: getProducts
     });
 
-    // Cálculos para el Bento Grid
     const totalProducts = products?.length || 0;
     const outOfStock = products?.filter(p => p.stock === 0).length || 0;
     const lowStock = products?.filter(p => p.stock > 0 && p.stock <= 5).length || 0;
 
-    // Funciones para abrir modales
-    const handleNewProduct = () => {
-        setSelectedProduct(null);
-        setIsProductModalOpen(true);
-    };
-
-    const handleEditProduct = (product: Product) => {
-        setSelectedProduct(product);
-        setIsProductModalOpen(true);
-    };
-
-    const handleAdjustStock = (product: Product) => {
-        setSelectedProduct(product);
-        setIsStockModalOpen(true);
-    };
+    const handleNewProduct = () => { setSelectedProduct(null); setIsProductModalOpen(true); };
+    const handleEditProduct = (product: Product) => { setSelectedProduct(product); setIsProductModalOpen(true); };
+    const handleAdjustStock = (product: Product) => { setSelectedProduct(product); setIsStockModalOpen(true); };
 
     return (
         <div className="max-w-6xl mx-auto">
-            {/* Cabecera */}
             <header className="flex justify-between items-end mb-8">
                 <div>
-                    <h2 className="text-xs font-semibold tracking-widest text-gray-400 mb-2 uppercase">
-                        Gestión de Insumos
-                    </h2>
-                    <h3 className="text-4xl font-serif text-maison-text">
-                        Inventario ✿
-                    </h3>
+                    <h2 className="text-xs font-semibold tracking-widest text-gray-400 mb-2 uppercase">Gestión de Insumos</h2>
+                    <h3 className="text-4xl font-serif text-maison-text">Inventario ✿</h3>
                 </div>
-
-                {/* ⭐️ NUEVO: Contenedor con los dos botones */}
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => setIsCargaMasivaModalOpen(true)}
-                        className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
-                    >
+                    <button onClick={() => setIsCargaMasivaModalOpen(true)} className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
                         <FiUploadCloud className="text-lg" /> Carga Masiva
                     </button>
-                    <button
-                        onClick={handleNewProduct}
-                        className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
-                    >
+                    <button onClick={handleNewProduct} className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
                         <FiPlus className="text-lg" /> Nuevo Producto
                     </button>
                 </div>
             </header>
 
-            {/* BENTO GRID DE ESTADÍSTICAS */}
+            {/* BENTO GRID */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 {isLoading ? (
                     [1, 2, 3].map(i => (
                         <div key={i} className="bg-maison-card border border-maison-border rounded-2xl p-5 flex items-start gap-4 animate-pulse">
                             <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
-                            <div className="space-y-2 flex-1 mt-1">
-                                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                                <div className="h-8 bg-gray-200 rounded w-1/4 mt-2"></div>
-                            </div>
+                            <div className="space-y-2 flex-1 mt-1"><div className="h-3 bg-gray-200 rounded w-1/2"></div><div className="h-8 bg-gray-200 rounded w-1/4 mt-2"></div></div>
                         </div>
                     ))
                 ) : (
                     <>
                         <div className="bg-maison-card border border-maison-border rounded-2xl p-5 flex items-start gap-4">
-                            <div className="bg-maison-bg p-3 rounded-xl border border-maison-border">
-                                <FiLayers className="text-xl text-gray-600" />
-                            </div>
-                            <div>
-                                <h4 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Total de Productos</h4>
-                                <span className="text-3xl font-serif">{totalProducts}</span>
-                            </div>
+                            <div className="bg-maison-bg p-3 rounded-xl border border-maison-border"><FiLayers className="text-xl text-gray-600" /></div>
+                            <div><h4 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Total de Productos</h4><span className="text-3xl font-serif">{totalProducts}</span></div>
                         </div>
                         <div className={`bg-maison-card border rounded-2xl p-5 flex items-start gap-4 transition-colors ${lowStock > 0 ? 'border-orange-200 bg-orange-50/30' : 'border-maison-border'}`}>
-                            <div className={`p-3 rounded-xl border ${lowStock > 0 ? 'bg-orange-100 border-orange-200' : 'bg-maison-bg border-maison-border'}`}>
-                                <FiAlertTriangle className={`text-xl ${lowStock > 0 ? 'text-orange-500' : 'text-gray-600'}`} />
-                            </div>
-                            <div>
-                                <h4 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Stock Bajo (≤ 5)</h4>
-                                <span className="text-3xl font-serif">{lowStock}</span>
-                            </div>
+                            <div className={`p-3 rounded-xl border ${lowStock > 0 ? 'bg-orange-100 border-orange-200' : 'bg-maison-bg border-maison-border'}`}><FiAlertTriangle className={`text-xl ${lowStock > 0 ? 'text-orange-500' : 'text-gray-600'}`} /></div>
+                            <div><h4 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Stock Bajo (≤ 5)</h4><span className="text-3xl font-serif">{lowStock}</span></div>
                         </div>
                         <div className={`bg-maison-card border rounded-2xl p-5 flex items-start gap-4 transition-colors ${outOfStock > 0 ? 'border-red-200 bg-red-50/30' : 'border-maison-border'}`}>
-                            <div className={`p-3 rounded-xl border ${outOfStock > 0 ? 'bg-red-100 border-red-200' : 'bg-maison-bg border-maison-border'}`}>
-                                <FiBox className={`text-xl ${outOfStock > 0 ? 'text-red-500' : 'text-gray-600'}`} />
-                            </div>
-                            <div>
-                                <h4 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Sin Stock</h4>
-                                <span className="text-3xl font-serif">{outOfStock}</span>
-                            </div>
+                            <div className={`p-3 rounded-xl border ${outOfStock > 0 ? 'bg-red-100 border-red-200' : 'bg-maison-bg border-maison-border'}`}><FiBox className={`text-xl ${outOfStock > 0 ? 'text-red-500' : 'text-gray-600'}`} /></div>
+                            <div><h4 className="text-xs font-semibold tracking-widest text-gray-400 uppercase mb-1">Sin Stock</h4><span className="text-3xl font-serif">{outOfStock}</span></div>
                         </div>
                     </>
                 )}
             </div>
 
-            {/* LISTADO DE PRODUCTOS */}
+            {/* TABLE */}
             <div className="bg-maison-card border border-maison-border rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
@@ -144,51 +94,27 @@ export default function Inventario() {
                                     </tr>
                                 ))
                             ) : products?.length === 0 ? (
-                                <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
-                                        No hay productos registrados en el inventario.
-                                    </td>
-                                </tr>
+                                <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500">No hay productos registrados en el inventario.</td></tr>
                             ) : (
                                 products?.map((product) => {
                                     const isOutOfStock = product.stock === 0;
                                     const isLowStock = product.stock > 0 && product.stock <= 5;
-
                                     return (
                                         <tr key={product._id} className="hover:bg-gray-50 transition-colors group">
                                             <td className="px-6 py-4">
                                                 <p className="font-medium text-maison-text">{product.name}</p>
-                                                {product.description && (
-                                                    <p className="text-xs text-gray-400 mt-0.5 truncate max-w-xs">{product.description}</p>
-                                                )}
+                                                {product.description && <p className="text-xs text-gray-400 mt-0.5 truncate max-w-xs">{product.description}</p>}
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className="text-sm text-gray-600">{product.brand}</span>
-                                            </td>
+                                            <td className="px-6 py-4"><span className="text-sm text-gray-600">{product.brand}</span></td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full border ${isOutOfStock ? 'bg-red-50 text-red-600 border-red-200' :
-                                                    isLowStock ? 'bg-orange-50 text-orange-600 border-orange-200' :
-                                                        'bg-green-50 text-green-600 border-green-200'
-                                                    }`}>
+                                                <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full border ${isOutOfStock ? 'bg-red-50 text-red-600 border-red-200' : isLowStock ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-green-50 text-green-600 border-green-200'}`}>
                                                     {product.stock} {product.stock === 1 ? 'unidad' : 'unidades'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex justify-end gap-2">
-                                                    <button
-                                                        onClick={() => handleAdjustStock(product)}
-                                                        className="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-600 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
-                                                        title="Ajustar Stock"
-                                                    >
-                                                        <FiActivity /> Stock
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleEditProduct(product)}
-                                                        className="p-1.5 text-gray-400 hover:text-maison-text transition-colors cursor-pointer"
-                                                        title="Editar detalles"
-                                                    >
-                                                        <FiEdit2 size={16} />
-                                                    </button>
+                                                    <button onClick={() => handleAdjustStock(product)} className="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-600 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer" title="Ajustar Stock"><FiActivity /> Stock</button>
+                                                    <button onClick={() => handleEditProduct(product)} className="p-1.5 text-gray-400 hover:text-maison-text transition-colors cursor-pointer" title="Editar detalles"><FiEdit2 size={16} /></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -200,21 +126,9 @@ export default function Inventario() {
                 </div>
             </div>
 
-            {/* Aquí irán los modales una vez que los creemos */}
-            <ProductoModal
-                isOpen={isProductModalOpen}
-                onClose={() => setIsProductModalOpen(false)}
-                productToEdit={selectedProduct}
-            />
-            <AjusteStockModal
-                isOpen={isStockModalOpen}
-                onClose={() => setIsStockModalOpen(false)}
-                product={selectedProduct}
-            />
-            <CargaMasivaModal
-                isOpen={isCargaMasivaModalOpen}
-                onClose={() => setIsCargaMasivaModalOpen(false)}
-            />
+            <ProductoModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} productToEdit={selectedProduct} />
+            <AjusteStockModal isOpen={isStockModalOpen} onClose={() => setIsStockModalOpen(false)} product={selectedProduct} />
+            <CargaMasivaModal isOpen={isCargaMasivaModalOpen} onClose={() => setIsCargaMasivaModalOpen(false)} />
         </div>
     );
 }

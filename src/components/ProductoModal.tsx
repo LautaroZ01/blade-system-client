@@ -3,16 +3,11 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FiAlertCircle, FiInfo } from "react-icons/fi";
-import { useApi } from "../hooks/useApi";
+
+import { createProduct, updateProduct, type ProductFormData } from "../api/productApi";
+import { handleApiError } from "../api/errorHandler";
 import type { Product } from "../types";
 import Modal from "./ui/Modal";
-
-export interface ProductFormData {
-    name: string;
-    brand: string;
-    stock?: number;
-    description?: string;
-}
 
 interface Props {
     isOpen: boolean;
@@ -21,7 +16,7 @@ interface Props {
 }
 
 export default function ProductoModal({ isOpen, onClose, productToEdit }: Props) {
-    const api = useApi();
+
     const queryClient = useQueryClient();
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ProductFormData>({
@@ -37,16 +32,12 @@ export default function ProductoModal({ isOpen, onClose, productToEdit }: Props)
     }, [productToEdit, isOpen, reset]);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: ProductFormData) => {
+        mutationFn: (data: ProductFormData) => {
             if (productToEdit) {
                 const { stock, ...updateData } = data;
-                const response = await api.put(`/productos/${productToEdit._id}`, updateData);
-                return response.data;
-            } else {
-                const payload = { ...data, stock: Number(data.stock) };
-                const response = await api.post('/productos', payload);
-                return response.data;
+                return updateProduct(productToEdit._id, updateData);
             }
+            return createProduct(data);
         },
         onSuccess: () => {
             toast.success(productToEdit ? 'Producto actualizado exitosamente' : 'Producto registrado exitosamente', {
@@ -55,14 +46,7 @@ export default function ProductoModal({ isOpen, onClose, productToEdit }: Props)
             queryClient.invalidateQueries({ queryKey: ['products'] });
             onClose();
         },
-        onError: (error: any) => {
-            const data = error.response?.data;
-            if (data?.errors && Array.isArray(data.errors)) {
-                data.errors.forEach((err: any) => toast.error(err.msg));
-            } else {
-                toast.error(data?.error || 'Error al guardar el producto');
-            }
-        }
+        onError: (error) => handleApiError(error, 'Error al guardar el producto')
     });
 
     const onSubmit = (data: ProductFormData) => mutate(data);

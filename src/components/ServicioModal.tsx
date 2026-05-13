@@ -3,14 +3,11 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FiAlertCircle } from "react-icons/fi";
-import { useApi } from "../hooks/useApi";
+
+import { createService, updateService, type ServiceFormData } from "../api/serviceApi";
+import { handleApiError } from "../api/errorHandler";
 import type { Service } from "../types";
 import Modal from "./ui/Modal";
-
-export interface ServiceFormData {
-    name: string;
-    defaultTouchupDays: number;
-}
 
 interface Props {
     isOpen: boolean;
@@ -19,7 +16,7 @@ interface Props {
 }
 
 export default function ServicioModal({ isOpen, onClose, serviceToEdit }: Props) {
-    const api = useApi();
+
     const queryClient = useQueryClient();
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ServiceFormData>({
@@ -35,24 +32,16 @@ export default function ServicioModal({ isOpen, onClose, serviceToEdit }: Props)
     }, [serviceToEdit, isOpen, reset]);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: ServiceFormData) => {
-            if (serviceToEdit) {
-                const response = await api.put(`/servicios/${serviceToEdit._id}`, data);
-                return response.data;
-            } else {
-                const response = await api.post('/servicios', data);
-                return response.data;
-            }
-        },
+        mutationFn: (data: ServiceFormData) =>
+            serviceToEdit
+                ? updateService(serviceToEdit._id, data)
+                : createService(data),
         onSuccess: () => {
             toast.success(serviceToEdit ? 'Servicio actualizado' : 'Servicio creado exitosamente');
             queryClient.invalidateQueries({ queryKey: ['services'] });
             onClose();
         },
-        onError: (error: any) => {
-            const errorMsg = error.response?.data?.error || 'Error al guardar el servicio';
-            toast.error(errorMsg);
-        }
+        onError: (error) => handleApiError(error, 'Error al guardar el servicio')
     });
 
     const onSubmit = (data: ServiceFormData) => mutate(data);

@@ -3,11 +3,13 @@ import { useForm, useWatch } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FiArrowDownRight, FiArrowUpRight, FiActivity } from "react-icons/fi";
-import { useApi } from "../hooks/useApi";
+
+import { adjustStock } from "../api/productApi";
+import { handleApiError } from "../api/errorHandler";
 import type { Product } from "../types";
 import Modal from "./ui/Modal";
 
-export interface AjusteStockFormData {
+interface AjusteStockFormData {
     type: 'add' | 'subtract';
     amount: number;
     reason?: string;
@@ -20,7 +22,7 @@ interface Props {
 }
 
 export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
-    const api = useApi();
+
     const queryClient = useQueryClient();
 
     const { register, handleSubmit, control, formState: { errors }, reset } = useForm<AjusteStockFormData>({
@@ -37,14 +39,10 @@ export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
     }, [isOpen, reset]);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: AjusteStockFormData) => {
+        mutationFn: (data: AjusteStockFormData) => {
             if (!product) throw new Error("No hay producto seleccionado");
             const quantity = data.type === 'add' ? data.amount : -Math.abs(data.amount);
-            const response = await api.post(`/productos/${product._id}/stock`, {
-                quantity,
-                reason: data.reason
-            });
-            return response.data;
+            return adjustStock(product._id, { quantity, reason: data.reason });
         },
         onSuccess: () => {
             toast.success('Stock actualizado exitosamente', {
@@ -53,10 +51,7 @@ export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
             queryClient.invalidateQueries({ queryKey: ['products'] });
             onClose();
         },
-        onError: (error: any) => {
-            const errorMsg = error.response?.data?.error || 'Error al actualizar el stock';
-            toast.error(errorMsg);
-        }
+        onError: (error) => handleApiError(error, 'Error al actualizar el stock')
     });
 
     const onSubmit = (data: AjusteStockFormData) => {
@@ -103,7 +98,6 @@ export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
             icon={<FiActivity />}
             footer={footer}
         >
-            {/* Stock actual */}
             <div className="mb-6 flex items-center justify-between bg-white border border-gray-200 px-4 py-3 rounded-xl shadow-sm">
                 <span className="text-sm font-medium text-gray-500">Stock Actual</span>
                 <span className="text-xl font-serif">{product.stock} <span className="text-sm font-sans text-gray-400 font-normal">unidades</span></span>
@@ -111,7 +105,6 @@ export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
 
             <form id="ajusteStockForm" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-                {/* Tipo de movimiento */}
                 <div className="grid grid-cols-2 gap-3">
                     <label className={`relative flex flex-col items-center p-4 border rounded-xl cursor-pointer transition-all ${type === 'add' ? 'border-maison-primary bg-maison-primary/5 ring-1 ring-maison-primary' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
                         <input type="radio" value="add" className="sr-only" {...register('type')} />
@@ -126,7 +119,6 @@ export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
                     </label>
                 </div>
 
-                {/* Cantidad y Motivo */}
                 <div className="space-y-4">
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Cantidad a mover *</label>
@@ -155,7 +147,6 @@ export default function AjusteStockModal({ isOpen, onClose, product }: Props) {
                     </div>
                 </div>
 
-                {/* Vista previa del stock final */}
                 <div className={`p-4 rounded-xl border flex justify-between items-center transition-colors ${isInvalidStock ? 'bg-red-50 border-red-200 text-red-600' : 'bg-gray-50 border-gray-200 text-gray-600'}`}>
                     <span className="text-sm font-medium">Stock resultante proyectado:</span>
                     <span className={`text-xl font-bold ${isInvalidStock ? 'text-red-600' : 'text-maison-text'}`}>

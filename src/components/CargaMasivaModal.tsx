@@ -3,8 +3,8 @@ import * as XLSX from 'xlsx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { FiUploadCloud, FiFileText, FiCheckCircle } from 'react-icons/fi';
-import { useApi } from '../hooks/useApi';
-import type { Product } from '../types';
+import { createBulkProducts, type BulkProductData } from '../api/productApi';
+import { handleApiError } from '../api/errorHandler';
 import Modal from './ui/Modal';
 
 interface Props {
@@ -12,12 +12,7 @@ interface Props {
     onClose: () => void;
 }
 
-interface BulkProductData {
-    name: string;
-    brand: string;
-    stock: number;
-    description: string;
-}
+
 
 interface ExcelRow {
     Nombre?: string;
@@ -31,23 +26,16 @@ interface ExcelRow {
     [key: string]: unknown;
 }
 
-interface BulkResponse {
-    message: string;
-    products: Product[];
-}
+
 
 export default function CargaMasivaModal({ isOpen, onClose }: Props) {
-    const api = useApi();
     const queryClient = useQueryClient();
 
     const [previewData, setPreviewData] = useState<BulkProductData[]>([]);
     const [fileName, setFileName] = useState<string>('');
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: BulkProductData[]) => {
-            const response = await api.post<BulkResponse>('/productos/bulk', data);
-            return response.data;
-        },
+        mutationFn: (data: BulkProductData[]) => createBulkProducts(data),
         onSuccess: (data) => {
             toast.success(data.message, {
                 style: { background: '#FDFBF7', color: '#54A885', borderColor: '#54A885' }
@@ -55,7 +43,7 @@ export default function CargaMasivaModal({ isOpen, onClose }: Props) {
             queryClient.invalidateQueries({ queryKey: ['products'] });
             handleClose();
         },
-        onError: () => toast.error('Error al subir los productos. Revisa el formato del archivo.')
+        onError: (error) => handleApiError(error, 'Error al subir los productos. Revisa el formato del archivo.')
     });
 
     const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {

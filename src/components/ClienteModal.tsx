@@ -3,16 +3,11 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FiAlertCircle } from "react-icons/fi";
-import { useApi } from "../hooks/useApi";
+
+import { createClient, updateClient, type ClientFormData } from "../api/clientApi";
+import { handleApiError } from "../api/errorHandler";
 import type { Client } from "../types";
 import Modal from "./ui/Modal";
-
-export interface ClientFormData {
-    firstName: string;
-    lastName: string;
-    phone?: string;
-    medicalNotes?: string;
-}
 
 interface Props {
     isOpen: boolean;
@@ -21,7 +16,7 @@ interface Props {
 }
 
 export default function ClienteModal({ isOpen, onClose, clientToEdit }: Props) {
-    const api = useApi();
+
     const queryClient = useQueryClient();
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ClientFormData>({
@@ -42,15 +37,10 @@ export default function ClienteModal({ isOpen, onClose, clientToEdit }: Props) {
     }, [clientToEdit, isOpen, reset]);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: ClientFormData) => {
-            if (clientToEdit) {
-                const response = await api.put(`/clientes/${clientToEdit._id}`, data);
-                return response.data;
-            } else {
-                const response = await api.post('/clientes', data);
-                return response.data;
-            }
-        },
+        mutationFn: (data: ClientFormData) =>
+            clientToEdit
+                ? updateClient(clientToEdit._id, data)
+                : createClient(data),
         onSuccess: () => {
             toast.success(clientToEdit ? 'Cliente actualizado exitosamente' : 'Cliente registrado exitosamente');
             queryClient.invalidateQueries({ queryKey: ['clients'] });
@@ -59,10 +49,7 @@ export default function ClienteModal({ isOpen, onClose, clientToEdit }: Props) {
             }
             onClose();
         },
-        onError: (error: any) => {
-            const errorMsg = error.response?.data?.error || 'Error al conectar con el servidor';
-            toast.error(errorMsg);
-        }
+        onError: (error) => handleApiError(error, 'Error al guardar el cliente')
     });
 
     const onSubmit = (data: ClientFormData) => mutate(data);
