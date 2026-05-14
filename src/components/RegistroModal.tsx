@@ -159,7 +159,7 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
                             {inventoryProducts?.map(prod => (<option key={prod._id} value={prod._id} disabled={prod.stock === 0}>{prod.name} ({prod.brand}) - Stock: {prod.stock}</option>))}
                         </select>
                         <input type="number" min="1" placeholder="Cant." className="w-24 px-4 py-2.5 bg-maison-bg border border-maison-border rounded-xl text-sm" value={quantityToAdd} onChange={(e) => setQuantityToAdd(e.target.value ? Number(e.target.value) : '')} />
-                        <button type="button" onClick={handleAddProduct} disabled={!selectedProductId || !quantityToAdd} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50"><FiPlus /></button>
+                        <button type="button" onClick={handleAddProduct} disabled={!selectedProductId || !quantityToAdd} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"><FiPlus /></button>
                     </div>
                     {fields.length > 0 ? (
                         <ul className="space-y-2">
@@ -171,7 +171,7 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
                                             <span className="text-sm font-medium text-gray-700">{det?.name || 'Insumo'}</span>
                                             <span className="text-xs text-gray-500">{field.quantity} unidades/ml</span>
                                         </div>
-                                        <button type="button" onClick={() => remove(index)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"><FiTrash2 size={16} /></button>
+                                        <button type="button" onClick={() => remove(index)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"><FiTrash2 size={16} /></button>
                                     </li>
                                 );
                             })}
