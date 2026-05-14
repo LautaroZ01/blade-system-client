@@ -11,7 +11,6 @@ import { createServiceRecord, type ServiceRecordPayload } from "../api/serviceRe
 import { handleApiError } from "../api/errorHandler";
 import type { Product, Client, Service } from "../types";
 import Modal from "./ui/Modal";
-import { useAuth } from "@clerk/react";
 
 interface Props {
     isOpen: boolean;
@@ -20,27 +19,24 @@ interface Props {
 }
 
 export default function RegistroModal({ isOpen, onClose, preselectedClientId }: Props) {
-
-    const { isLoaded } = useAuth();
-
     const queryClient = useQueryClient();
 
     const { data: inventoryProducts } = useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: () => getProducts(),
-        enabled: isOpen && isLoaded
+        enabled: isOpen
     });
 
     const { data: clients } = useQuery<Client[]>({
         queryKey: ['clients'],
         queryFn: () => getClients(),
-        enabled: isOpen && isLoaded
+        enabled: isOpen
     });
 
     const { data: services } = useQuery<Service[]>({
         queryKey: ['services'],
         queryFn: () => getServices(),
-        enabled: isOpen && isLoaded
+        enabled: isOpen
     });
 
     const [selectedProductId, setSelectedProductId] = useState('');
@@ -91,6 +87,8 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
             queryClient.invalidateQueries({ queryKey: ['recent-movements'] });
             queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
             queryClient.invalidateQueries({ queryKey: ['products'] });
+            queryClient.invalidateQueries({ queryKey: ['upcoming-touchups'] });
+
             handleCloseModal();
         },
         onError: (error) => handleApiError(error, 'Error al registrar la visita')

@@ -7,10 +7,8 @@ import { getServices, deleteService as deleteServiceApi } from '../api/serviceAp
 import { handleApiError } from '../api/errorHandler';
 import type { Service } from '../types';
 import ServicioModal from '../components/ServicioModal';
-import { useAuth } from '@clerk/react';
 
 export default function Servicios() {
-    const { isLoaded } = useAuth();
 
     const queryClient = useQueryClient();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,8 +16,7 @@ export default function Servicios() {
 
     const { data: servicios, isLoading } = useQuery<Service[]>({
         queryKey: ['services'],
-        queryFn: getServices,
-        enabled: isLoaded
+        queryFn: getServices
     });
 
     const { mutate: deleteService } = useMutation({

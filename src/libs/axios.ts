@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// ⭐️ Le enseñamos a TypeScript la estructura exacta de Clerk en el objeto window
 declare global {
     interface Window {
         Clerk?: {
+            isReady?: boolean; // Clerk internamente tiene esta bandera o similar
             session?: {
                 getToken: () => Promise<string | null>;
             };
@@ -20,15 +20,32 @@ const api = axios.create({
     withCredentials: true,
 });
 
+/**
+ * Función que pausa la ejecución hasta que Clerk se inyecte en el objeto window
+ * y termine de cargar su estado inicial (session).
+ */
+const waitForClerk = async (maxRetries = 20, delayMs = 100): Promise<void> => {
+    for (let i = 0; i < maxRetries; i++) {
+        // Asumimos que si window.Clerk existe, el script ya cargó.
+        // Podrías necesitar ajustar esto si Clerk demora en montar la sesión.
+        if (window.Clerk) {
+            return;
+        }
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+    console.warn("Clerk no se cargó a tiempo en Axios.");
+};
+
 // ─── Interceptors ───────────────────────────────────────────────────────────
 
-// Request: Inyecta el Bearer token leyendo Clerk directamente del navegador
 api.interceptors.request.use(
     async (config) => {
-        // Ahora TypeScript sabe perfectamente qué es window.Clerk y qué métodos tiene
+        // 1. Esperamos a que Clerk exista en el DOM
+        await waitForClerk();
+
         const clerk = window.Clerk;
 
-        // Si Clerk ya inicializó y hay una sesión activa, sacamos el token
+        // 2. Si hay sesión activa, inyectamos el token
         if (clerk?.session) {
             const token = await clerk.session.getToken();
             if (token) {
@@ -40,7 +57,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response: Manejo global de errores
 api.interceptors.response.use(
     (response) => response,
     (error) => {

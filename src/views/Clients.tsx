@@ -6,18 +6,14 @@ import { getClients } from '../api/clientApi';
 import type { Client } from '../types';
 import ClienteModal from '../components/ClienteModal';
 import { Link } from 'react-router';
-import { useAuth } from '@clerk/react';
 
 export default function Clients() {
-    const { isLoaded } = useAuth();
-
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { data: clientes, isLoading, isError } = useQuery<Client[]>({
         queryKey: ['clients'],
-        queryFn: getClients,
-        enabled: isLoaded
+        queryFn: getClients
     });
 
     // Lógica de filtrado en tiempo real
