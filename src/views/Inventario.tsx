@@ -7,8 +7,11 @@ import type { Product } from '../types';
 import ProductoModal from '../components/ProductoModal';
 import AjusteStockModal from '../components/AjusteStockModal';
 import CargaMasivaModal from '../components/CargaMasivaModal';
+import { useAuth } from '@clerk/react';
 
 export default function Inventario() {
+    const { isLoaded } = useAuth();
+
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [isCargaMasivaModalOpen, setIsCargaMasivaModalOpen] = useState(false);
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
@@ -16,7 +19,8 @@ export default function Inventario() {
 
     const { data: products, isLoading } = useQuery<Product[]>({
         queryKey: ['products'],
-        queryFn: getProducts
+        queryFn: getProducts,
+        enabled: isLoaded
     });
 
     const totalProducts = products?.length || 0;

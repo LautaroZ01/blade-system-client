@@ -11,6 +11,7 @@ import { createServiceRecord, type ServiceRecordPayload } from "../api/serviceRe
 import { handleApiError } from "../api/errorHandler";
 import type { Product, Client, Service } from "../types";
 import Modal from "./ui/Modal";
+import { useAuth } from "@clerk/react";
 
 interface Props {
     isOpen: boolean;
@@ -20,24 +21,26 @@ interface Props {
 
 export default function RegistroModal({ isOpen, onClose, preselectedClientId }: Props) {
 
+    const { isLoaded } = useAuth();
+
     const queryClient = useQueryClient();
 
     const { data: inventoryProducts } = useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: () => getProducts(),
-        enabled: isOpen
+        enabled: isOpen && isLoaded
     });
 
     const { data: clients } = useQuery<Client[]>({
         queryKey: ['clients'],
         queryFn: () => getClients(),
-        enabled: isOpen
+        enabled: isOpen && isLoaded
     });
 
     const { data: services } = useQuery<Service[]>({
         queryKey: ['services'],
         queryFn: () => getServices(),
-        enabled: isOpen
+        enabled: isOpen && isLoaded
     });
 
     const [selectedProductId, setSelectedProductId] = useState('');

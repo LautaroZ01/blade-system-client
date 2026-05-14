@@ -10,25 +10,30 @@ import type { DashboardStats } from '../api/serviceRecordApi';
 import { formatDate, getTimelineStatus } from '../utils/dates';
 import RegistroModal from '../components/RegistroModal';
 import { Link } from 'react-router';
+import { useAuth } from '@clerk/react';
 
 export default function Dashboard() {
+    const { isLoaded } = useAuth();
 
     const queryClient = useQueryClient();
     const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
 
     const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats>({
         queryKey: ['dashboard-stats'],
-        queryFn: getDashboardStats
+        queryFn: getDashboardStats,
+        enabled: isLoaded
     });
 
     const { data: retoques, isLoading: isLoadingRetoques } = useQuery<ServiceRecord[]>({
         queryKey: ['upcoming-touchups'],
-        queryFn: getUpcomingTouchups
+        queryFn: getUpcomingTouchups,
+        enabled: isLoaded
     });
 
     const { data: recientes, isLoading: isLoadingRecientes } = useQuery<ServiceRecord[]>({
         queryKey: ['recent-movements'],
-        queryFn: getRecentRecords
+        queryFn: getRecentRecords,
+        enabled: isLoaded
     });
 
     const { mutate: completarRetoque } = useMutation({

@@ -10,10 +10,13 @@ import { formatDate } from '../utils/dates';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import ClienteModal from '../components/ClienteModal';
+import { useAuth } from '@clerk/react';
 
 export default function PerfilCliente() {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const { isLoaded } = useAuth();
 
     const queryClient = useQueryClient();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -21,13 +24,13 @@ export default function PerfilCliente() {
     const { data: cliente, isLoading: isLoadingClient } = useQuery<Client>({
         queryKey: ['client', id],
         queryFn: () => getClientById(id!),
-        enabled: !!id
+        enabled: !!id && isLoaded
     });
 
     const { data: historial, isLoading: isLoadingHistory } = useQuery<ServiceRecord[]>({
         queryKey: ['client-history', id],
         queryFn: () => getClientRecords(id!),
-        enabled: !!id
+        enabled: !!id && isLoaded
     });
 
     const { mutate: deleteClient } = useMutation({
