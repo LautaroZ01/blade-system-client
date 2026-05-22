@@ -34,7 +34,7 @@ export default function Servicios() {
         if (window.confirm(`¿Seguro que querés eliminar el servicio "${name}"?`)) deleteService(id);
     };
 
-    if (isLoading) return <div className="p-8 text-gray-500">Cargando catálogo...</div>;
+    // Loading skeleton is implemented below
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -48,7 +48,19 @@ export default function Servicios() {
                 </button>
             </header>
 
-            {servicios?.length === 0 ? (
+            {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="bg-maison-card border border-maison-border rounded-2xl p-6 shadow-sm animate-pulse">
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="w-11 h-11 bg-gray-200 rounded-xl"></div>
+                            </div>
+                            <div className="h-6 bg-gray-200 rounded w-3/4 mb-3 mt-1"></div>
+                            <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                    ))}
+                </div>
+            ) : servicios?.length === 0 ? (
                 <div className="bg-maison-card border border-maison-border rounded-2xl p-12 text-center shadow-sm">
                     <div className="w-16 h-16 bg-maison-bg border border-maison-border rounded-full flex items-center justify-center mx-auto mb-4">
                         <FiScissors className="text-2xl text-gray-400" />

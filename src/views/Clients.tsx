@@ -24,8 +24,7 @@ export default function Clients() {
         return fullName.includes(term) || phone.includes(term);
     });
 
-    if (isLoading) return <div className="p-4 text-gray-500">Cargando directorio...</div>;
-    if (isError) return <div className="p-4 text-maison-red">Error al cargar los clientes.</div>;
+    if (!isLoading && isError) return <div className="p-4 text-maison-red">Error al cargar los clientes.</div>;
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -59,7 +58,24 @@ export default function Clients() {
 
             {/* Lista de Clientes */}
             <div className="bg-maison-card border border-maison-border rounded-2xl overflow-hidden shadow-sm">
-                {filteredClientes?.length === 0 ? (
+                {isLoading ? (
+                    <ul className="divide-y divide-maison-border">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <li key={i} className="p-4 animate-pulse">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3 sm:gap-4 min-w-0 w-full">
+                                        <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full bg-gray-200"></div>
+                                        <div className="space-y-2 flex-1">
+                                            <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                                        </div>
+                                    </div>
+                                    <div className="h-9 bg-gray-200 rounded-lg w-24 shrink-0 hidden sm:block"></div>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : filteredClientes?.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
                         No se encontraron clientes con "{searchTerm}".
                     </div>
