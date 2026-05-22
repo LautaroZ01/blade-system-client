@@ -144,7 +144,7 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
                         <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Fecha del Servicio *</label>
                         <input type="date" className={`w-full px-4 py-2.5 bg-maison-bg border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 ${errors.serviceDate ? 'border-maison-red' : 'border-maison-border'}`} {...register('serviceDate', { required: 'Requerido' })} />
                     </div>
-                    <div className="flex flex-col gap-1.5 bg-gray-50 p-3.5 rounded-xl border border-gray-200 -mt-2">
+                    <div className="flex flex-col gap-1.5 bg-gray-50 p-3.5 rounded-xl border border-gray-200 md:-mt-2">
                         <label className="text-[11px] font-bold tracking-widest text-gray-500 uppercase flex justify-between">
                             Próximo Retoque <span className="text-gray-400 font-normal normal-case">Opcional</span>
                         </label>
@@ -153,13 +153,15 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
                 </div>
                 <div className="border border-maison-border rounded-xl p-5 bg-white">
                     <h3 className="text-sm font-semibold text-maison-text mb-4 flex items-center gap-2"><FiBox className="text-gray-400" /> Insumos Consumidos (Stock)</h3>
-                    <div className="flex gap-3 mb-4">
-                        <select className="flex-1 px-4 py-2.5 bg-maison-bg border border-maison-border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 text-sm" value={selectedProductId} onChange={(e) => setSelectedProductId(e.target.value)}>
+                    <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                        <select className="w-full sm:flex-1 px-4 py-2.5 bg-maison-bg border border-maison-border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 text-sm" value={selectedProductId} onChange={(e) => setSelectedProductId(e.target.value)}>
                             <option value="">Seleccionar insumo...</option>
                             {inventoryProducts?.map(prod => (<option key={prod._id} value={prod._id} disabled={prod.stock === 0}>{prod.name} ({prod.brand}) - Stock: {prod.stock}</option>))}
                         </select>
-                        <input type="number" min="1" placeholder="Cant." className="w-24 px-4 py-2.5 bg-maison-bg border border-maison-border rounded-xl text-sm" value={quantityToAdd} onChange={(e) => setQuantityToAdd(e.target.value ? Number(e.target.value) : '')} />
-                        <button type="button" onClick={handleAddProduct} disabled={!selectedProductId || !quantityToAdd} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"><FiPlus /></button>
+                        <div className="flex gap-3">
+                            <input type="number" min="1" placeholder="Cant." className="flex-1 sm:w-24 px-4 py-2.5 bg-maison-bg border border-maison-border rounded-xl text-sm" value={quantityToAdd} onChange={(e) => setQuantityToAdd(e.target.value ? Number(e.target.value) : '')} />
+                            <button type="button" onClick={handleAddProduct} disabled={!selectedProductId || !quantityToAdd} className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50 cursor-pointer flex-shrink-0"><FiPlus /></button>
+                        </div>
                     </div>
                     {fields.length > 0 ? (
                         <ul className="space-y-2">

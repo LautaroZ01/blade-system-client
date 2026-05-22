@@ -47,15 +47,15 @@ export default function Dashboard() {
 
     return (
         <div className="max-w-6xl mx-auto">
-            <header className="flex justify-between items-end mb-8">
+            <header className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-8">
                 <div>
                     <h2 className="text-xs font-semibold tracking-widest text-gray-400 mb-2 uppercase">Panel Principal</h2>
-                    <h3 className="text-4xl font-serif text-maison-text">Buen día, Maison ✿</h3>
+                    <h3 className="text-3xl sm:text-4xl font-serif text-maison-text">Buen día, Maison ✿</h3>
                 </div>
                 <div className="flex gap-3">
-                    <Link to="/clientes" className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-5 py-2.5 rounded-full text-sm font-medium transition-colors shadow-sm">Directorio</Link>
-                    <button onClick={() => setIsRegistroModalOpen(true)} className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
-                        <FiPlus /> Nueva Visita
+                    <Link to="/clientes" className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-4 py-2.5 sm:px-5 rounded-full text-sm font-medium transition-colors shadow-sm">Directorio</Link>
+                    <button onClick={() => setIsRegistroModalOpen(true)} className="bg-maison-primary hover:bg-black text-white px-4 py-2.5 sm:px-5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
+                        <FiPlus /> <span>Nueva Visita</span>
                     </button>
                 </div>
             </header>
@@ -115,18 +115,18 @@ export default function Dashboard() {
                                 return (
                                     <div key={registro._id} className="relative flex justify-between items-center bg-white border border-maison-border rounded-xl p-4 shadow-sm ml-6 hover:border-gray-300 transition-colors group">
                                         <div className={`absolute left-[-45px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full ${status.dotColor} ring-4 ring-white`}></div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-maison-bg border border-maison-border flex items-center justify-center font-serif text-lg text-maison-text shadow-sm">{initials}</div>
-                                            <div>
-                                                <p className="font-medium text-maison-text">{registro.client.firstName} {registro.client.lastName}</p>
-                                                <p className="text-sm text-gray-500 mt-0.5">{registro.service.name}</p>
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-10 h-10 shrink-0 rounded-full bg-maison-bg border border-maison-border flex items-center justify-center font-serif text-lg text-maison-text shadow-sm">{initials}</div>
+                                            <div className="min-w-0">
+                                                <p className="font-medium text-maison-text truncate">{registro.client.firstName} {registro.client.lastName}</p>
+                                                <p className="text-sm text-gray-500 mt-0.5 truncate">{registro.service.name}</p>
                                             </div>
                                         </div>
-                                        <div className="text-right flex flex-col items-end">
+                                        <div className="text-right flex flex-col items-end shrink-0 ml-2">
                                             <span className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full mb-1.5 ${status.pillClass}`}>{status.label}</span>
                                             <p className="text-xs text-gray-400 font-medium">{formatDate(registro.nextTouchupDate)}</p>
                                         </div>
-                                        <button onClick={() => completarRetoque(registro._id)} title="Marcar retoque como realizado" className="absolute -right-3 -top-3 w-8 h-8 bg-maison-bg border border-maison-border rounded-full flex items-center justify-center text-gray-400 hover:text-maison-green hover:border-maison-green opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-sm">
+                                        <button onClick={() => completarRetoque(registro._id)} title="Marcar retoque como realizado" className="absolute -right-3 -top-3 w-8 h-8 bg-maison-bg border border-maison-border rounded-full flex items-center justify-center text-gray-400 hover:text-maison-green hover:border-maison-green opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer shadow-sm">
                                             <FiCheck size={16} />
                                         </button>
                                     </div>
@@ -156,12 +156,12 @@ export default function Dashboard() {
                             {recientes?.map((registro) => (
                                 <li key={registro._id} className="relative pl-5 group">
                                     <span className="absolute left-0 top-2 w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-maison-text transition-colors"></span>
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <p className="font-medium text-maison-text text-sm">{registro.client.firstName} {registro.client.lastName}</p>
-                                            <p className="text-xs text-gray-500 mt-0.5">{registro.service.name}</p>
+                                    <div className="flex justify-between items-start gap-2">
+                                        <div className="min-w-0">
+                                            <p className="font-medium text-maison-text text-sm truncate">{registro.client.firstName} {registro.client.lastName}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5 truncate">{registro.service.name}</p>
                                         </div>
-                                        <span className="text-[11px] text-gray-400 font-medium tracking-wide">{formatDate(registro.createdAt)}</span>
+                                        <span className="text-[11px] text-gray-400 font-medium tracking-wide shrink-0">{formatDate(registro.createdAt)}</span>
                                     </div>
                                 </li>
                             ))}

@@ -38,12 +38,12 @@ export default function Servicios() {
 
     return (
         <div className="max-w-6xl mx-auto">
-            <header className="flex justify-between items-end mb-8">
+            <header className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-8">
                 <div>
                     <h2 className="text-xs font-semibold tracking-widest text-gray-400 mb-2 uppercase">Catálogo</h2>
-                    <h3 className="text-4xl font-serif text-maison-text">Servicios</h3>
+                    <h3 className="text-3xl sm:text-4xl font-serif text-maison-text">Servicios</h3>
                 </div>
-                <button onClick={handleCreate} className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm">
+                <button onClick={handleCreate} className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm self-start sm:self-auto">
                     <FiPlus className="text-lg" /> Agregar Servicio
                 </button>
             </header>
@@ -57,12 +57,13 @@ export default function Servicios() {
                     <p className="text-sm text-gray-500">Agregá tu primer servicio para empezar a cargar el historial de los clientes.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {servicios?.map((servicio) => (
                         <div key={servicio._id} className="bg-maison-card border border-maison-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="bg-maison-bg p-3 rounded-xl border border-maison-border text-gray-600"><FiScissors className="text-xl" /></div>
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {/* Botones siempre visibles en móvil, con hover en desktop */}
+                                <div className="flex gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                     <button onClick={() => handleEdit(servicio)} className="p-2 text-gray-400 hover:text-maison-primary transition-colors cursor-pointer"><FiEdit2 size={16} /></button>
                                     <button onClick={() => handleDelete(servicio._id, servicio.name)} className="p-2 text-gray-400 hover:text-maison-red transition-colors cursor-pointer"><FiTrash2 size={16} /></button>
                                 </div>

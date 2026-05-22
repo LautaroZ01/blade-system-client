@@ -30,17 +30,17 @@ export default function Inventario() {
 
     return (
         <div className="max-w-6xl mx-auto">
-            <header className="flex justify-between items-end mb-8">
+            <header className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-8">
                 <div>
                     <h2 className="text-xs font-semibold tracking-widest text-gray-400 mb-2 uppercase">Gestión de Insumos</h2>
-                    <h3 className="text-4xl font-serif text-maison-text">Inventario ✿</h3>
+                    <h3 className="text-3xl sm:text-4xl font-serif text-maison-text">Inventario ✿</h3>
                 </div>
-                <div className="flex items-center gap-3">
-                    <button onClick={() => setIsCargaMasivaModalOpen(true)} className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
-                        <FiUploadCloud className="text-lg" /> Carga Masiva
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <button onClick={() => setIsCargaMasivaModalOpen(true)} className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 px-4 sm:px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
+                        <FiUploadCloud className="text-lg" /> <span className="hidden xs:inline">Carga Masiva</span><span className="xs:hidden">Masivo</span>
                     </button>
-                    <button onClick={handleNewProduct} className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
-                        <FiPlus className="text-lg" /> Nuevo Producto
+                    <button onClick={handleNewProduct} className="bg-maison-primary hover:bg-black text-white px-4 sm:px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
+                        <FiPlus className="text-lg" /> <span>Nuevo Producto</span>
                     </button>
                 </div>
             </header>
@@ -72,26 +72,26 @@ export default function Inventario() {
                 )}
             </div>
 
-            {/* TABLE */}
+            {/* TABLE — scroll horizontal en móvil */}
             <div className="bg-maison-card border border-maison-border rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse min-w-[520px]">
                         <thead>
                             <tr className="border-b border-maison-border bg-maison-bg/50">
-                                <th className="px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Producto</th>
-                                <th className="px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Marca</th>
-                                <th className="px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase text-center">Stock Disponible</th>
-                                <th className="px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase text-right">Acciones</th>
+                                <th className="px-4 sm:px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Producto</th>
+                                <th className="px-4 sm:px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase">Marca</th>
+                                <th className="px-4 sm:px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase text-center">Stock</th>
+                                <th className="px-4 sm:px-6 py-4 text-xs font-bold tracking-widest text-gray-500 uppercase text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-maison-border">
                             {isLoading ? (
                                 [1, 2, 3, 4].map(i => (
                                     <tr key={i} className="animate-pulse">
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-3/4"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-1/2"></div></td>
-                                        <td className="px-6 py-4"><div className="h-6 bg-gray-200 rounded-full w-16 mx-auto"></div></td>
-                                        <td className="px-6 py-4 flex justify-end"><div className="h-8 bg-gray-200 rounded w-20"></div></td>
+                                        <td className="px-4 sm:px-6 py-4"><div className="h-4 bg-gray-200 rounded w-3/4"></div></td>
+                                        <td className="px-4 sm:px-6 py-4"><div className="h-4 bg-gray-200 rounded w-1/2"></div></td>
+                                        <td className="px-4 sm:px-6 py-4"><div className="h-6 bg-gray-200 rounded-full w-16 mx-auto"></div></td>
+                                        <td className="px-4 sm:px-6 py-4 flex justify-end"><div className="h-8 bg-gray-200 rounded w-20"></div></td>
                                     </tr>
                                 ))
                             ) : products?.length === 0 ? (
@@ -102,17 +102,17 @@ export default function Inventario() {
                                     const isLowStock = product.stock > 0 && product.stock <= 5;
                                     return (
                                         <tr key={product._id} className="hover:bg-gray-50 transition-colors group">
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 sm:px-6 py-4">
                                                 <p className="font-medium text-maison-text">{product.name}</p>
-                                                {product.description && <p className="text-xs text-gray-400 mt-0.5 truncate max-w-xs">{product.description}</p>}
+                                                {product.description && <p className="text-xs text-gray-400 mt-0.5 truncate max-w-[180px] sm:max-w-xs">{product.description}</p>}
                                             </td>
-                                            <td className="px-6 py-4"><span className="text-sm text-gray-600">{product.brand}</span></td>
-                                            <td className="px-6 py-4 text-center">
+                                            <td className="px-4 sm:px-6 py-4"><span className="text-sm text-gray-600">{product.brand}</span></td>
+                                            <td className="px-4 sm:px-6 py-4 text-center">
                                                 <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full border ${isOutOfStock ? 'bg-red-50 text-red-600 border-red-200' : isLowStock ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-green-50 text-green-600 border-green-200'}`}>
-                                                    {product.stock} {product.stock === 1 ? 'unidad' : 'unidades'}
+                                                    {product.stock} {product.stock === 1 ? 'unid.' : 'unids.'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 sm:px-6 py-4">
                                                 <div className="flex justify-end gap-2">
                                                     <button onClick={() => handleAdjustStock(product)} className="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-600 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer" title="Ajustar Stock"><FiActivity /> Stock</button>
                                                     <button onClick={() => handleEditProduct(product)} className="p-1.5 text-gray-400 hover:text-maison-text transition-colors cursor-pointer" title="Editar detalles"><FiEdit2 size={16} /></button>

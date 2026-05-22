@@ -30,14 +30,14 @@ export default function Clients() {
     return (
         <div className="max-w-6xl mx-auto">
             {/* Cabecera */}
-            <header className="flex justify-between items-end mb-8">
+            <header className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end mb-8">
                 <div>
                     <h2 className="text-xs font-semibold tracking-widest text-gray-400 mb-2 uppercase">Directorio</h2>
-                    <h3 className="text-4xl font-serif text-maison-text">Clientes</h3>
+                    <h3 className="text-3xl sm:text-4xl font-serif text-maison-text">Clientes</h3>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                    className="bg-maison-primary hover:bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-sm self-start sm:self-auto"
                 >
                     <FiPlus className="text-lg" /> Agregar Cliente
                 </button>
@@ -68,30 +68,36 @@ export default function Clients() {
                         {filteredClientes?.map((cliente) => {
                             const initials = cliente.firstName.charAt(0).toUpperCase() + cliente.lastName.charAt(0).toUpperCase();
                             return (
-                                <li key={cliente._id} className="p-4 hover:bg-gray-50 transition-colors flex justify-between items-center group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-maison-bg border border-maison-border flex items-center justify-center font-serif text-lg text-maison-text shadow-sm">
-                                            {initials}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-maison-text text-lg">{cliente.firstName} {cliente.lastName}</p>
-                                            <div className="flex items-center gap-3 text-sm text-gray-500 mt-0.5">
-                                                {cliente.phone ? (
-                                                    <span className="flex items-center gap-1.5"><FiPhone className="text-gray-400" /> {cliente.phone}</span>
-                                                ) : (
-                                                    <span className="text-gray-400 italic">Sin teléfono registrado</span>
-                                                )}
-                                                {cliente.medicalNotes && (
-                                                    <span className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-maison-orange border border-orange-100 rounded-md text-[10px] font-bold uppercase tracking-wider">
-                                                        Notas Médicas
-                                                    </span>
-                                                )}
+                                <li key={cliente._id} className="p-4 hover:bg-gray-50 transition-colors group">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                            <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full bg-maison-bg border border-maison-border flex items-center justify-center font-serif text-lg text-maison-text shadow-sm">
+                                                {initials}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-medium text-maison-text text-base sm:text-lg truncate">{cliente.firstName} {cliente.lastName}</p>
+                                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-gray-500 mt-0.5">
+                                                    {cliente.phone ? (
+                                                        <span className="flex items-center gap-1.5"><FiPhone className="text-gray-400 shrink-0" /> {cliente.phone}</span>
+                                                    ) : (
+                                                        <span className="text-gray-400 italic">Sin teléfono</span>
+                                                    )}
+                                                    {cliente.medicalNotes && (
+                                                        <span className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-maison-orange border border-orange-100 rounded-md text-[10px] font-bold uppercase tracking-wider">
+                                                            Notas Médicas
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
+                                        {/* Siempre visible en móvil, con hover en desktop */}
+                                        <Link
+                                            to={`/clientes/${cliente._id}`}
+                                            className="shrink-0 sm:opacity-0 sm:group-hover:opacity-100 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer shadow-sm flex items-center gap-2"
+                                        >
+                                            <FiUser /> <span className="hidden sm:inline">Ver Perfil</span>
+                                        </Link>
                                     </div>
-                                    <Link to={`/clientes/${cliente._id}`} className="opacity-0 group-hover:opacity-100 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer shadow-sm flex items-center gap-2">
-                                        <FiUser /> Ver Perfil
-                                    </Link>
                                 </li>
                             );
                         })}

@@ -53,7 +53,7 @@ export default function Modal({
                 className={`bg-maison-card border border-maison-border rounded-2xl w-full ${maxWidth} shadow-xl overflow-hidden ${containerClassName}`}
             >
                 {/* ── Header ── */}
-                <div className="flex justify-between items-center p-6 border-b border-maison-border bg-maison-bg shrink-0">
+                <div className="flex justify-between items-center p-5 sm:p-6 border-b border-maison-border bg-maison-bg shrink-0">
                     <div className="flex items-center gap-3">
                         {icon && (
                             <div className="p-2.5 bg-white border border-maison-border rounded-xl shadow-sm text-gray-600">
@@ -78,13 +78,13 @@ export default function Modal({
                 </div>
 
                 {/* ── Body ── */}
-                <div className="p-6 overflow-y-auto custom-scrollbar">
+                <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar">
                     {children}
                 </div>
 
                 {/* ── Footer (opcional) ── */}
                 {footer && (
-                    <div className="p-6 border-t border-maison-border bg-gray-50/50 flex justify-end gap-3 shrink-0">
+                    <div className="p-5 sm:p-6 border-t border-maison-border bg-gray-50/50 flex flex-col-reverse sm:flex-row justify-end gap-3 shrink-0">
                         {footer}
                     </div>
                 )}

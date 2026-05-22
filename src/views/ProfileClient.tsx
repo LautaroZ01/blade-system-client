@@ -63,24 +63,29 @@ export default function PerfilCliente() {
             </button>
 
             {/* Tarjeta principal */}
-            <div className="bg-maison-card border border-maison-border rounded-3xl p-8 shadow-sm mb-8 relative overflow-hidden">
+            <div className="bg-maison-card border border-maison-border rounded-3xl p-6 sm:p-8 shadow-sm mb-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-maison-bg rounded-full -translate-y-1/2 translate-x-1/3 opacity-50"></div>
-                <div className="absolute top-6 right-6 flex gap-2 z-10">
+                {/* Botones de acción — arriba a la derecha */}
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex gap-2 z-10">
                     <button onClick={() => setIsEditModalOpen(true)} className="p-2.5 bg-white border border-gray-200 text-gray-600 hover:text-maison-primary hover:border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer" title="Editar cliente"><FiEdit2 size={16} /></button>
                     <button onClick={handleDelete} className="p-2.5 bg-white border border-gray-200 text-gray-600 hover:text-maison-red hover:border-red-200 hover:bg-red-50 rounded-lg transition-all shadow-sm cursor-pointer" title="Eliminar cliente"><FiTrash2 size={16} /></button>
                 </div>
-                <div className="relative flex flex-col md:flex-row gap-8 items-start md:items-center">
-                    <div className="w-28 h-28 shrink-0 rounded-full bg-white border-2 border-maison-border flex items-center justify-center font-serif text-4xl text-maison-text shadow-sm">{initials}</div>
-                    <div className="flex-1">
-                        <h2 className="text-4xl font-serif text-maison-text mb-2">{cliente.firstName} {cliente.lastName}</h2>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mt-3">
-                            <span className="flex items-center gap-1.5 bg-maison-bg px-3 py-1.5 rounded-lg border border-maison-border"><FiPhone className="text-gray-400" />{cliente.phone || 'Sin teléfono'}</span>
-                            <span className="flex items-center gap-1.5 bg-maison-bg px-3 py-1.5 rounded-lg border border-maison-border text-xs uppercase tracking-widest font-semibold">Cliente desde {new Date(cliente.createdAt).getFullYear()}</span>
+                <div className="relative flex flex-col sm:flex-row gap-5 sm:gap-8 items-start sm:items-center">
+                    <div className="w-20 h-20 sm:w-28 sm:h-28 shrink-0 rounded-full bg-white border-2 border-maison-border flex items-center justify-center font-serif text-3xl sm:text-4xl text-maison-text shadow-sm">{initials}</div>
+                    <div className="flex-1 pr-16 sm:pr-0">
+                        <h2 className="text-2xl sm:text-4xl font-serif text-maison-text mb-2">{cliente.firstName} {cliente.lastName}</h2>
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mt-3">
+                            <span className="flex items-center gap-1.5 bg-maison-bg px-3 py-1.5 rounded-lg border border-maison-border">
+                                <FiPhone className="text-gray-400 shrink-0" />{cliente.phone || 'Sin teléfono'}
+                            </span>
+                            <span className="flex items-center gap-1.5 bg-maison-bg px-3 py-1.5 rounded-lg border border-maison-border text-xs uppercase tracking-widest font-semibold">
+                                Cliente desde {new Date(cliente.createdAt).getFullYear()}
+                            </span>
                         </div>
                     </div>
                 </div>
                 {cliente.medicalNotes && (
-                    <div className="mt-8 p-4 bg-orange-50 border border-orange-100 rounded-2xl relative">
+                    <div className="mt-6 sm:mt-8 p-4 bg-orange-50 border border-orange-100 rounded-2xl relative">
                         <h4 className="text-xs font-bold uppercase tracking-widest text-maison-orange mb-2 flex items-center gap-2"><FiAlertCircle /> Notas Médicas Importantes</h4>
                         <p className="text-sm text-gray-700 leading-relaxed">{cliente.medicalNotes}</p>
                     </div>
@@ -89,19 +94,19 @@ export default function PerfilCliente() {
 
             {/* Historial */}
             <div>
-                <h3 className="text-2xl font-serif text-maison-text mb-6 flex items-center gap-3"><FiClock className="text-gray-400" /> Historial de Visitas</h3>
-                <div className="bg-maison-card border border-maison-border rounded-3xl p-8 shadow-sm">
+                <h3 className="text-xl sm:text-2xl font-serif text-maison-text mb-6 flex items-center gap-3"><FiClock className="text-gray-400" /> Historial de Visitas</h3>
+                <div className="bg-maison-card border border-maison-border rounded-3xl p-5 sm:p-8 shadow-sm">
                     {historial?.length === 0 ? (
                         <p className="text-gray-500 text-center py-8">Este cliente aún no tiene servicios registrados.</p>
                     ) : (
                         <div className="relative pl-4 border-l-2 border-maison-border space-y-8 py-2 ml-2">
                             {historial?.map((registro) => (
-                                <div key={registro._id} className="relative ml-8">
-                                    <div className="absolute left-[-57px] top-1.5 w-4 h-4 rounded-full bg-maison-primary ring-4 ring-white"></div>
-                                    <div className="bg-white border border-maison-border rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="flex flex-wrap justify-between items-start gap-4 mb-3">
+                                <div key={registro._id} className="relative ml-6 sm:ml-8">
+                                    <div className="absolute left-[-46px] sm:left-[-57px] top-1.5 w-4 h-4 rounded-full bg-maison-primary ring-4 ring-white"></div>
+                                    <div className="bg-white border border-maison-border rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex flex-wrap justify-between items-start gap-3 mb-3">
                                             <div>
-                                                <h4 className="text-lg font-medium text-maison-text">{registro.service.name}</h4>
+                                                <h4 className="text-base sm:text-lg font-medium text-maison-text">{registro.service.name}</h4>
                                                 <p className="text-sm font-semibold tracking-widest text-gray-400 uppercase mt-1 flex items-center gap-1.5"><FiCalendar /> {formatDate(registro.serviceDate)}</p>
                                             </div>
                                             {registro.touchupStatus === 'completed' && (
