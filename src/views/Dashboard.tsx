@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FiUsers, FiScissors, FiCalendar, FiPlus, FiCheck } from 'react-icons/fi';
-import { toast } from 'sonner';
 
-import { getDashboardStats, getUpcomingTouchups, getRecentRecords, updateServiceRecord } from '../api/serviceRecordApi';
-import { handleApiError } from '../api/errorHandler';
+import { getDashboardStats, getUpcomingTouchups, getRecentRecords } from '../api/serviceRecordApi';
 import type { ServiceRecord } from '../types';
 import type { DashboardStats } from '../api/serviceRecordApi';
 import { formatDate, getTimelineStatus } from '../utils/dates';
@@ -12,9 +10,10 @@ import RegistroModal from '../components/RegistroModal';
 import { Link } from 'react-router';
 
 export default function Dashboard() {
-
-    const queryClient = useQueryClient();
     const [isRegistroModalOpen, setIsRegistroModalOpen] = useState(false);
+
+    const [prefillClient, setPrefillClient] = useState<string | undefined>(undefined);
+    const [prefillService, setPrefillService] = useState<string | undefined>(undefined);
 
     const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats>({
         queryKey: ['dashboard-stats'],
@@ -31,17 +30,17 @@ export default function Dashboard() {
         queryFn: getRecentRecords
     });
 
-    const { mutate: completarRetoque } = useMutation({
-        mutationFn: (id: string) => updateServiceRecord(id, { touchupStatus: 'completed' }),
-        onSuccess: () => {
-            toast.success('Retoque marcado como completado', {
-                style: { background: '#FDFBF7', color: '#54A885', borderColor: '#54A885' }
-            });
-            queryClient.invalidateQueries({ queryKey: ['upcoming-touchups'] });
-            queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
-        },
-        onError: (error) => handleApiError(error, 'Error al actualizar el estado')
-    });
+    const handleOpenNewVisit = () => {
+        setPrefillClient(undefined);
+        setPrefillService(undefined);
+        setIsRegistroModalOpen(true);
+    };
+
+    const handleTouchupCheck = (clientId: string, serviceId: string) => {
+        setPrefillClient(clientId);
+        setPrefillService(serviceId);
+        setIsRegistroModalOpen(true);
+    };
 
     const isDashboardLoading = isLoadingStats || isLoadingRetoques || isLoadingRecientes;
 
@@ -54,7 +53,8 @@ export default function Dashboard() {
                 </div>
                 <div className="flex gap-3">
                     <Link to="/clientes" className="bg-white border border-gray-200 hover:border-gray-300 text-gray-600 px-4 py-2.5 sm:px-5 rounded-full text-sm font-medium transition-colors shadow-sm">Directorio</Link>
-                    <button onClick={() => setIsRegistroModalOpen(true)} className="bg-maison-primary hover:bg-black text-white px-4 py-2.5 sm:px-5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
+
+                    <button onClick={handleOpenNewVisit} className="bg-maison-primary hover:bg-black text-white px-4 py-2.5 sm:px-5 rounded-full text-sm font-medium flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
                         <FiPlus /> <span>Nueva Visita</span>
                     </button>
                 </div>
@@ -114,7 +114,7 @@ export default function Dashboard() {
                                 const initials = registro.client.firstName.charAt(0).toUpperCase();
                                 return (
                                     <div key={registro._id} className="relative flex justify-between items-center bg-white border border-maison-border rounded-xl p-4 shadow-sm ml-6 hover:border-gray-300 transition-colors group">
-                                        <div className={`absolute left-[-45px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full ${status.dotColor} ring-4 ring-white`}></div>
+                                        <div className={`absolute -left-11.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full ${status.dotColor} ring-4 ring-white`}></div>
                                         <div className="flex items-center gap-3 min-w-0">
                                             <div className="w-10 h-10 shrink-0 rounded-full bg-maison-bg border border-maison-border flex items-center justify-center font-serif text-lg text-maison-text shadow-sm">{initials}</div>
                                             <div className="min-w-0">
@@ -126,7 +126,12 @@ export default function Dashboard() {
                                             <span className={`inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full mb-1.5 ${status.pillClass}`}>{status.label}</span>
                                             <p className="text-xs text-gray-400 font-medium">{formatDate(registro.nextTouchupDate)}</p>
                                         </div>
-                                        <button onClick={() => completarRetoque(registro._id)} title="Marcar retoque como realizado" className="absolute -right-3 -top-3 w-8 h-8 bg-maison-bg border border-maison-border rounded-full flex items-center justify-center text-gray-400 hover:text-maison-green hover:border-maison-green opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer shadow-sm">
+
+                                        <button
+                                            onClick={() => handleTouchupCheck(registro.client._id, registro.service._id)}
+                                            title="Registrar nueva visita para este retoque"
+                                            className="absolute -right-3 -top-3 w-8 h-8 bg-maison-bg border border-maison-border rounded-full flex items-center justify-center text-gray-400 hover:text-maison-green hover:border-maison-green opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer shadow-sm"
+                                        >
                                             <FiCheck size={16} />
                                         </button>
                                     </div>
@@ -170,7 +175,12 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <RegistroModal isOpen={isRegistroModalOpen} onClose={() => setIsRegistroModalOpen(false)} />
+            <RegistroModal
+                isOpen={isRegistroModalOpen}
+                onClose={() => setIsRegistroModalOpen(false)}
+                preselectedClientId={prefillClient}
+                preselectedServiceId={prefillService}
+            />
         </div>
     );
 }

@@ -23,6 +23,7 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     preselectedClientId?: string;
+    preselectedServiceId?: string;
 }
 
 // ⭐️ Constante para estilar los React-Select para que coincidan con tu tema "Maison"
@@ -46,7 +47,7 @@ const selectStyles: StylesConfig<SelectOption, false> = {
     })
 };
 
-export default function RegistroModal({ isOpen, onClose, preselectedClientId }: Props) {
+export default function RegistroModal({ isOpen, onClose, preselectedClientId, preselectedServiceId }: Props) {
     const queryClient = useQueryClient();
 
     const { data: inventoryProducts } = useQuery<Product[]>({
@@ -83,7 +84,7 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
     const { register, control, handleSubmit, formState: { errors }, reset } = useForm<ServiceRecordPayload>({
         defaultValues: {
             client: preselectedClientId || '',
-            service: '',
+            service: preselectedServiceId || '',
             serviceDate: new Date().toISOString().split('T')[0],
             notes: '',
             nextTouchupDate: '',
@@ -103,14 +104,14 @@ export default function RegistroModal({ isOpen, onClose, preselectedClientId }: 
         if (isOpen) {
             reset({
                 client: preselectedClientId || '',
-                service: '',
+                service: preselectedServiceId || '',
                 serviceDate: new Date().toISOString().split('T')[0],
                 notes: '',
                 nextTouchupDate: '',
                 productsUsed: []
             });
         }
-    }, [isOpen, preselectedClientId, reset]);
+    }, [isOpen, preselectedClientId, preselectedServiceId, reset]);
 
     const { mutate, isPending } = useMutation({
         mutationFn: (data: ServiceRecordPayload) => {
