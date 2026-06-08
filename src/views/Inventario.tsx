@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { FiBox, FiAlertTriangle, FiPlus, FiEdit2, FiLayers, FiActivity, FiUploadCloud } from 'react-icons/fi';
+import { FiBox, FiAlertTriangle, FiPlus, FiEdit2, FiLayers, FiActivity, FiUploadCloud, FiSearch } from 'react-icons/fi';
 
 import { getProducts } from '../api/productApi';
 import type { Product } from '../types';
@@ -14,10 +14,19 @@ export default function Inventario() {
     const [isCargaMasivaModalOpen, setIsCargaMasivaModalOpen] = useState(false);
     const [isStockModalOpen, setIsStockModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterLowStock, setFilterLowStock] = useState(false);
 
     const { data: products, isLoading } = useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: getProducts
+    });
+
+    const filteredProducts = products?.filter(product => {
+        const term = searchTerm.toLowerCase();
+        const matchNameBrand = product.name.toLowerCase().includes(term) || (product.brand?.toLowerCase() || '').includes(term);
+        const matchStock = filterLowStock ? product.stock <= 5 : true;
+        return matchNameBrand && matchStock;
     });
 
     const totalProducts = products?.length || 0;
@@ -72,6 +81,31 @@ export default function Inventario() {
                 )}
             </div>
 
+            {/* Filtros */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="relative w-full sm:w-96">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FiSearch className="text-gray-400 text-lg" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre o marca..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-11 pr-4 py-2.5 bg-maison-card border border-maison-border rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-400 transition-all shadow-sm"
+                    />
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer self-start sm:self-auto text-sm font-medium text-gray-700 bg-maison-card border border-maison-border px-4 py-2.5 rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
+                    <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-gray-300 text-maison-primary focus:ring-maison-primary"
+                        checked={filterLowStock}
+                        onChange={(e) => setFilterLowStock(e.target.checked)}
+                    />
+                    <span>Solo stock bajo (≤ 5)</span>
+                </label>
+            </div>
+
             {/* TABLE — scroll horizontal en móvil */}
             <div className="bg-maison-card border border-maison-border rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -96,8 +130,10 @@ export default function Inventario() {
                                 ))
                             ) : products?.length === 0 ? (
                                 <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500">No hay productos registrados en el inventario.</td></tr>
+                            ) : filteredProducts?.length === 0 ? (
+                                <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500">No se encontraron productos con los filtros aplicados.</td></tr>
                             ) : (
-                                products?.map((product) => {
+                                filteredProducts?.map((product) => {
                                     const isOutOfStock = product.stock === 0;
                                     const isLowStock = product.stock > 0 && product.stock <= 5;
                                     return (

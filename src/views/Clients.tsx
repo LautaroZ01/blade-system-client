@@ -24,8 +24,6 @@ export default function Clients() {
         return fullName.includes(term) || phone.includes(term);
     });
 
-    if (!isLoading && isError) return <div className="p-4 text-maison-red">Error al cargar los clientes.</div>;
-
     return (
         <div className="max-w-6xl mx-auto">
             {/* Cabecera */}
@@ -75,6 +73,14 @@ export default function Clients() {
                             </li>
                         ))}
                     </ul>
+                ) : isError ? (
+                    <div className="p-12 text-center text-maison-red">
+                        No pudimos cargar los clientes en este momento. Por favor, intenta de nuevo.
+                    </div>
+                ) : clientes?.length === 0 ? (
+                    <div className="p-12 text-center text-gray-500">
+                        Aún no tienes clientes registrados. ¡Crea tu primer cliente!
+                    </div>
                 ) : filteredClientes?.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
                         No se encontraron clientes con "{searchTerm}".
